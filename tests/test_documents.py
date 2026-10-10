@@ -21,6 +21,27 @@ def test_generate_power_of_attorney_deed_execution(client: TestClient):
     data = response.json()
     assert data["status"] == "COMPLETED"
     assert data["payment_status"] == "COMPLETED"
+    assert "estado civil no informado" in data["rendered_content"]
+    assert "profesion u oficio no informado" in data["rendered_content"]
+
+
+def test_generate_deed_with_null_civil_status_and_profession(client: TestClient):
+    payload = {
+        "client": {
+            "rut": "15.342.198-4",
+            "full_name": "Juan Pablo Morales Sepulveda",
+            "estado_civil": None,
+            "profesion_oficio": None,
+        },
+        "deed_type": "PODER_ESPECIAL",
+        "payment_id": "tx_pay_902148",
+    }
+    response = client.post("/documents/generate", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "COMPLETED"
+    assert "estado civil no informado" in data["rendered_content"]
+    assert "profesion u oficio no informado" in data["rendered_content"]
 
 
 def test_document_service_generates_completed_deed():

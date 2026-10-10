@@ -23,6 +23,18 @@ TEMPLATES = {
     ),
 }
 
+NO_INFORMADO = "no informado"
+
+
+def _value_or_not_informed(client_data: dict, key: str) -> str:
+    """
+    Retorna el valor del campo, o "no informado" si viene ausente, nulo o vacio.
+    """
+    value = client_data.get(key)
+    if value is None or not str(value).strip():
+        return NO_INFORMADO
+    return value
+
 
 def build_document_context(client_data: dict, deed_metadata: dict) -> dict:
     """
@@ -39,8 +51,8 @@ def build_document_context(client_data: dict, deed_metadata: dict) -> dict:
         "cliente_domicilio": client_data.get("address", "Santiago"),
         "cliente_comuna": client_data.get("commune", "Santiago"),
         "cliente_nacionalidad": client_data.get("nacionalidad", "chilena"),
-        "cliente_estado_civil": client_data["estado_civil"],
-        "cliente_profesion": client_data["profesion_oficio"],
+        "cliente_estado_civil": _value_or_not_informed(client_data, "estado_civil"),
+        "cliente_profesion": _value_or_not_informed(client_data, "profesion_oficio"),
     }
     return context
 
